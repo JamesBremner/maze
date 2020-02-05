@@ -11,8 +11,8 @@ using namespace std;
 
 void cMaze::generate()
 {
-    int row_count = 5;
-    int col_count = 5;
+    int row_count = 10;
+    int col_count = 10;
     /* initialize random seed: */
     srand (time(NULL));
     for( int row = 0; row < row_count; row++ )
@@ -201,5 +201,64 @@ void cMaze::displayWindow()
     });
     form.show();
     form.run();
+}
+
+std::string cMaze::svgText( const std::string& fn )
+{
+    int row_count =  myMaze.size()-1;
+    int col_count = myMaze[0].size()-1;
+    ofstream of(fn);
+
+    of << "<svg width=\"" << (col_count+2)*50 << "\" height=\"" << (row_count+2)*50;
+    of << "\" viewBox=\"" << -20 <<" "<< -20 <<" "<< (col_count+2)*50 <<" "<<(row_count+2)*50;
+    of << "\" xmlns=\"http://www.w3.org/2000/svg\">";
+    of << "<g>";
+    int kr = 0;
+    for( auto& r : myMaze )
+    {
+        int kc = 0;
+        for( auto& c : r )
+        {
+            if( c.top )
+                of << "<line x1=\"" << kc*50
+                   << "\" y1=\"" << kr*50
+                   <<"\" x2=\"" << (kc+1)*50
+                   <<"\" y2=\"" << kr*50
+                   <<"\" stroke=\"blue\" stroke-width=\"4\" />";
+            if( c.left )
+                of << "<line x1=\"" << kc*50
+                   << "\" y1=\"" << kr*50
+                   <<"\" x2=\"" << kc*50
+                   <<"\" y2=\"" << (kr+1)*50
+                   <<"\" stroke=\"blue\" stroke-width=\"4\" />";
+            if( kc == col_count )
+            {
+                if( c.right )
+                {
+                    of << "<line x1=\"" << (kc+1)*50
+                       << "\" y1=\"" << kr*50
+                       <<"\" x2=\"" << (kc+1)*50
+                       <<"\" y2=\"" << (kr+1)*50
+                       <<"\" stroke=\"blue\" stroke-width=\"4\" />";
+                }
+            }
+            if( kr == row_count )
+            {
+                if( c.down )
+                {
+                    of << "<line x1=\"" << kc*50
+                       << "\" y1=\"" << (kr+1)*50
+                       <<"\" x2=\"" << (kc+1)*50
+                       <<"\" y2=\"" << (kr+1)*50
+                       <<"\" stroke=\"blue\" stroke-width=\"4\" />";
+                }
+            }
+            kc++;
+        }
+        kr++;
+    }
+    of << "</g>";
+    of << "</svg>";
+    of.close();
 }
 

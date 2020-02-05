@@ -28,6 +28,8 @@ public:
 
     std::vector< std::string >  displayText();
 
+    std::string svgText( const std::string& fn );
+
     /** Display using ascii text in graphical window
         Method never returns until window is closed
     */

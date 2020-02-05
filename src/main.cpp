@@ -76,6 +76,8 @@ int main( int argc, char* argv[] )
 
     //theMaze.displayWindow();
 
+    theMaze.svgText("maze.svg");
+
 }
 
 
