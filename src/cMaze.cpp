@@ -203,7 +203,7 @@ void cMaze::displayWindow()
     form.run();
 }
 
-std::string cMaze::svgText( const std::string& fn )
+void cMaze::svg( const std::string& fn )
 {
     int row_count =  myMaze.size()-1;
     int col_count = myMaze[0].size()-1;

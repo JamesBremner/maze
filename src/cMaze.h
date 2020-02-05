@@ -28,7 +28,10 @@ public:
 
     std::vector< std::string >  displayText();
 
-    std::string svgText( const std::string& fn );
+    /** write maze display to SVG file
+        param[in] fn SVG output filename
+    */
+    void svg( const std::string& fn );
 
     /** Display using ascii text in graphical window
         Method never returns until window is closed
