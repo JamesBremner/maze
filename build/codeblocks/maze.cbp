@@ -12,6 +12,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc_v83" />
+				<Option parameters="--input maze2.txt" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -33,11 +34,16 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory="../../../windex/include" />
+			<Add directory="$(#boost)" />
 		</Compiler>
 		<Linker>
 			<Add library="gdi32" />
+			<Add library="boost_program_options-mgw82-mt-x64-1_70" />
+			<Add directory="$(#boost.lib)" />
 		</Linker>
 		<Unit filename="../../../windex/include/wex.h" />
+		<Unit filename="../../src/cMaze.cpp" />
+		<Unit filename="../../src/cMaze.h" />
 		<Unit filename="../../src/main.cpp" />
 		<Extensions>
 			<code_completion />
