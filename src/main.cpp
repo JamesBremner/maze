@@ -5,7 +5,24 @@
 
 using namespace std;
 
-std::string Parse( int argc, char *argv[] )
+class cConfig
+{
+public:
+
+    std::string inputfilename;
+    bool fgenerate;
+
+    cConfig()
+    : inputfilename("")
+    , fgenerate( false )
+    {
+
+    }
+
+    void Parse( int argc, char *argv[] );
+};
+
+void cConfig::Parse( int argc, char *argv[] )
 {
     namespace po = boost::program_options;
 
@@ -14,6 +31,7 @@ std::string Parse( int argc, char *argv[] )
     desc.add_options()
     ("help", "produce help message")
     ("input",   po::value<std::string>(), "input file.")
+    ("gen",     po::bool_switch( &fgenerate ),"Generate new maze")
     ;
 
     // parse the command line
@@ -37,20 +55,26 @@ std::string Parse( int argc, char *argv[] )
 
     if( vm.count("input") )
     {
-        return vm["input"].as<std::string>();
+        inputfilename = vm["input"].as<std::string>();
     }
-    return "";
+
 }
 
 int main( int argc, char* argv[] )
 {
     cMaze theMaze;
-    theMaze.read( Parse( argc, argv ) );
+    cConfig theConfig;
+    theConfig.Parse( argc, argv );
+
+    if( ! theConfig.fgenerate )
+        theMaze.read( theConfig.inputfilename );
+    else
+        theMaze.generate();
 
     for( auto& s : theMaze.displayText() )
         cout << s << "\n";
 
-    theMaze.displayWindow();
+    //theMaze.displayWindow();
 
 }
 

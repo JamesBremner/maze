@@ -3,9 +3,57 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 #include "wex.h"
 #include "cMaze.h"
 using namespace std;
+
+void cMaze::generate()
+{
+    int row_count = 5;
+    int col_count = 5;
+    /* initialize random seed: */
+    srand (time(NULL));
+    for( int row = 0; row < row_count; row++ )
+    {
+        vector< cCell > vCell;
+        for( int col = 0; col < col_count; col++ )
+        {
+            cCell C;
+
+            if( row == 0 )
+            {
+                C.left = false;
+            }
+            else if( col == 0 )
+            {
+                C.top = false;
+            }
+            else
+            {
+                int r = rand() % 2;
+                if( r )
+                    C.left = false;
+                else
+                    C.top = false;
+            }
+            vCell.push_back( C );
+        }
+        myMaze.push_back( vCell );
+    }
+    // select random exit
+    if( rand() % 2 )
+    {
+        int row = rand() % row_count;
+        myMaze[row][col_count-1].right = false;
+    }
+    else
+    {
+        int col = rand() & col_count   ;
+        myMaze[row_count-1][col].down = false;
+    }
+}
 
 void cMaze::read( const std::string& fname )
 {
@@ -17,7 +65,7 @@ void cMaze::read( const std::string& fname )
     int line = 1, cell = 1;
     while (!in.eof())
     {
-        vector< Cell > vCell;
+        vector< cCell > vCell;
 
         cell = 1;
         cout << "line " << line << endl;
@@ -28,7 +76,7 @@ void cMaze::read( const std::string& fname )
         cout << "strlen = " << strlen(str1) << endl;
         while (i < strlen(str1) - 1)
         {
-            Cell C;
+            cCell C;
             top = down = right = left = false;
             if (str1[i] == '+')
                 i++; //new cell
