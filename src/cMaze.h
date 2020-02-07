@@ -1,14 +1,40 @@
+class cConfig
+{
+public:
+
+    std::string inputfilename;
+    bool fgenerate;
+    int nrows;
+    int ncols;
+    enum class eGenAlgo {
+        none,
+        binary,
+        recursive
+    } myGenAlgo;
+
+    cConfig()
+    : inputfilename("")
+    , fgenerate( false )
+    , nrows( 8 )
+    , ncols( 8 )
+    {
+
+    }
+
+    void Parse( int argc, char *argv[] );
+};
+
 class cCell
 {
 public:
     bool top, down, right, left;    ///< true if wall present
 
     /// CTOR - build walls all around cell
-    cCell()
-    : top( true )
-    , down( true )
-    , right( true )
-    , left( true )
+    cCell( bool w = true )
+    : top( w )
+    , down( w )
+    , right( w )
+    , left( w )
     {
 
     }
@@ -16,14 +42,11 @@ public:
 
 class cMaze
 {
-
-    std::vector< std::vector< cCell > > myMaze;
-
 public:
 
-    void read( const std::string& fname );
+    void read();
 
-    /// generate random solveable maze using binary tree algorithm
+    /// generate random solveable maze using selected algorithm
     void generate();
 
     std::vector< std::string >  displayText();
@@ -37,4 +60,20 @@ public:
         Method never returns until window is closed
     */
     void displayWindow();
+
+    cConfig& config()
+    {
+        return myConfig;
+    }
+
+private:
+    std::vector< std::vector< cCell > > myMaze;
+    cConfig myConfig;
+    void generate_binary_tree();
+
+    /// Start maze generation using recursive division algorithm
+    void generate_recursive_init();
+
+    /// Recursive division generator
+    void generate_recursive( int x, int y, int w, int h );
 };

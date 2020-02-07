@@ -5,16 +5,82 @@
 #include <cstring>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
+#include <boost/program_options.hpp>
 #include "wex.h"
 #include "cMaze.h"
 using namespace std;
 
+
+void cConfig::Parse( int argc, char *argv[] )
+{
+    namespace po = boost::program_options;
+
+    // Declare the supported options.
+    po::options_description desc("Allowed options");
+    desc.add_options()
+    ("help", "produce help message")
+    ("input",   po::value<std::string>(), "input file.")
+    ("gen",     po::value<std::string>(), "Generate new maze. Specify algorithm: none, binary, recursive")
+    ;
+
+    // parse the command line
+    po::variables_map vm;
+    try
+    {
+        po::store(po::parse_command_line(argc, argv, desc), vm);
+        po::notify(vm);
+    }
+    catch (exception& e)
+    {
+        cerr << "error: " << e.what() << "\n";
+        exit(1);
+    }
+
+    if (vm.count("help"))
+    {
+        cout << desc << "\n";
+        exit(1);
+    }
+
+    if( vm.count("input") )
+    {
+        inputfilename = vm["input"].as<std::string>();
+    }
+
+    if( vm.count("gen") )
+    {
+        std::string a = vm["gen"].as<std::string>();
+        if( a[0] == 'b')
+            myGenAlgo = eGenAlgo::binary;
+        else if( a[0] == 'r' )
+            myGenAlgo = eGenAlgo::recursive;
+    }
+
+}
 void cMaze::generate()
+{
+    /* initialize random seed: */
+    srand (time(NULL));
+
+    switch( myConfig.myGenAlgo )
+    {
+    case cConfig::eGenAlgo::binary:
+        generate_binary_tree();
+        break;
+    case cConfig::eGenAlgo::recursive:
+        generate_recursive_init();
+        break;
+    default:
+        break;
+    }
+    return;
+}
+
+void cMaze::generate_binary_tree()
 {
     int row_count = 10;
     int col_count = 10;
-    /* initialize random seed: */
-    srand (time(NULL));
+
     for( int row = 0; row < row_count; row++ )
     {
         vector< cCell > vCell;
@@ -55,9 +121,76 @@ void cMaze::generate()
     }
 }
 
-void cMaze::read( const std::string& fname )
+void cMaze::generate_recursive_init()
 {
-    ifstream in(fname);
+    // construct initial chamber, maze with no walls except around edges
+    for( int r = 0; r < myConfig.nrows; r++ )
+    {
+        std::vector< cCell > vr;
+        for( int c = 0; c < myConfig.ncols; c++ )
+        {
+            cCell C( false );
+            if( r == 0 )
+                C.top = true;
+            if( r == myConfig.nrows-1 )
+                C.down = true;
+            if( c == 0 )
+                C.left = true;
+            if( c == myConfig.ncols-1 )
+                C.right = true;
+            vr.push_back( C );
+        }
+        myMaze.push_back( vr );
+    }
+    // open entrance and exit in walls around edges
+    myMaze[rand()%myConfig.nrows][0].left = false;
+    myMaze[rand()%myConfig.nrows][myConfig.ncols-1].right = false;
+
+    generate_recursive( 0, 0, myConfig.ncols, myConfig.nrows );
+}
+
+void cMaze::generate_recursive( int x, int y, int w, int h )
+{
+    // check for recurion completed
+    if( w == 1 && h == 1 )
+        return;
+
+    // raise four walls
+    int newx = w / 2;
+    int newy = h / 2;
+    for( int r = 0; r < h; r++ )
+    {
+        myMaze[y+r][x+newx].left = true;
+    }
+    for( int c = 0; c < w; c++ )
+    {
+        myMaze[y+newy][x+c].top = true;
+    }
+    // open passage in three of four walls
+    int wnop = rand() % 4;
+    if( wnop != 0 )
+        myMaze[y+newy][x+rand() % newx].top = false;
+    if( wnop != 1 )
+        myMaze[y+newy][x+newx+(rand()%(w-newx))].top = false;
+    if( wnop != 2 )
+        myMaze[y+rand()%newy][x+newx].left = false;
+    if( wnop != 3 )
+        myMaze[y+newy+(rand()%(h-newy))][x+newx].left = false;
+
+    // recurse into four smaller chambers
+    generate_recursive( x, y, newx, newy );
+    generate_recursive( x + newx, y, w - newx, newy );
+    generate_recursive( x, y + newy, newx, h - newy );
+    generate_recursive( x + newx, y + newy, w - newx, h - newy );
+
+}
+
+void cMaze::read()
+{
+    if( ! myConfig.inputfilename.length() )
+        return;
+
+    ifstream in( myConfig.inputfilename );
     char str1[100], str2[100], str3[100];
     in.getline(str1, 100);
     in.getline(str2, 100);
@@ -74,7 +207,7 @@ void cMaze::read( const std::string& fname )
         top = down = right = left = false;
         int j = 0, k = 1;
         cout << "strlen = " << strlen(str1) << endl;
-        while (i < strlen(str1) - 1)
+        while (i < (int)strlen(str1) - 1)
         {
             cCell C;
             top = down = right = left = false;
