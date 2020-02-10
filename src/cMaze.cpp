@@ -9,6 +9,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/pending/indirect_cmp.hpp>
+#include "raven_graph.h"
 #include "wex.h"
 #include "cMaze.h"
 using namespace std;
@@ -403,61 +404,6 @@ void cMaze::svg( const std::string& fn )
     of << "</svg>";
     of.close();
 }
-using namespace boost;
-template < typename TimeMap > class bfs_time_visitor:public default_bfs_visitor
-{
-    typedef typename property_traits < TimeMap >::value_type T;
-public:
-    bfs_time_visitor(TimeMap tmap, T & t):m_timemap(tmap), m_time(t) { }
-    template < typename Vertex, typename Graph >
-    void discover_vertex(Vertex u, const Graph & g) const
-    {
-        put(m_timemap, u, m_time++);
-    }
-    TimeMap m_timemap;
-    T & m_time;
-};
-
-template <class Graph>
-void breadth_first_search_pre(
-    vector<int>& pred,
-    int start,
-    Graph& g )
-{
-    pred.resize( num_vertices(g) );
-    pred[start] = start;
-    breadth_first_search(
-        g,
-        start,
-        boost::visitor(
-            boost::make_bfs_visitor(
-                boost::record_predecessors(pred.data(),
-                                           boost::on_tree_edge()))));
-}
-
-//void cMaze::testGraph()
-//{
-//    // set up syntax
-//    using namespace boost;
-//    typedef adjacency_list<vecS, vecS, directedS> graph_t;
-//
-//    // create simple test graph
-//    graph_t g( 4 );
-//    add_edge( 0, 1, g );
-//    add_edge( 1, 2, g );
-//    add_edge( 2, 3, g );
-//
-//    // search
-//    std::vector< int > predecessors;
-//    breadth_first_search_pre(
-//        predecessors,
-//        0,
-//        g );
-//
-//    // display results
-//    for( int v : predecessors )
-//        std::cout << v << " ";
-//}
 
 void cMaze::solve()
 {
@@ -474,7 +420,6 @@ void cMaze::solve()
         {
             if( ! c.top )
             {
-                //cout << kc <<" "<< kr <<" top "<<  kr*myConfig.ncols + kc <<" "<< (kr-1)*myConfig.ncols + kc << "\n";
                 add_edge(
                     kr*myConfig.ncols + kc,
                     (kr-1)*myConfig.ncols + kc,
@@ -486,7 +431,6 @@ void cMaze::solve()
             }
             if( ( ! c.left ) && kr*myConfig.ncols + kc != start )
             {
-                //cout << kc <<" "<< kr <<" left "<<  kr*myConfig.ncols + kc <<" "<< kr*myConfig.ncols + kc - 1 << "\n";
                 add_edge(
                     kr*myConfig.ncols + kc,
                     kr*myConfig.ncols + kc - 1,
@@ -501,48 +445,20 @@ void cMaze::solve()
         kr++;
     }
 
-//    std::cout << "edges(g) = ";
-//    graph_traits<graph_t>::edge_iterator ei, ei_end;
-//    for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei)
-//        std::cout << "(" << source(*ei, g)
-//                  << "," << target(*ei, g) << ") ";
-//    std::cout << std::endl;
 
-    vector<int> predecessors;
-    breadth_first_search_pre(
-        predecessors,
+    raven::graph::shortestPathInMaze(
+        myPath,
         start,
+        (myEndRow+1)*myConfig.ncols - 1,
         g );
 
-//    cout << "predecessors\n";
-//    int k = 0;
-//    for( auto v : predecessors )
-//    {
-//        cout << v << " ";
-//        if( k%myConfig.ncols == myConfig.ncols-1)
-//            cout << "\n";
-//        k++;
-//    }
-
-    myPath.clear();
-    int v = (myEndRow+1)*myConfig.ncols - 1;
-    myPath.push_back( v );
-    while( v != start )
-    {
-        v = predecessors[v];
-        myPath.push_back( v );
-    }
-
-    std::reverse(
-        myPath.begin(),
-        myPath.end() );
 }
 
-    bool cMaze::onPath( int c, int r )
-    {
-        if( ! myPath.size() )
-            return false;
-        int i = r * myConfig.ncols + c;
-        return find( myPath.begin(),myPath.end(),i) != myPath.end();
-    }
+bool cMaze::onPath( int c, int r )
+{
+    if( ! myPath.size() )
+        return false;
+    int i = r * myConfig.ncols + c;
+    return find( myPath.begin(),myPath.end(),i) != myPath.end();
+}
 
