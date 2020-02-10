@@ -19,7 +19,12 @@ int main( int argc, char* argv[] )
 
     //theMaze.displayWindow();
 
-    theMaze.svg("maze.svg");
+    //theMaze.svg("maze.svg");
+
+    theMaze.solve();
+
+    for( auto& s : theMaze.displayText() )
+        cout << s << "\n";
 
 }
 
