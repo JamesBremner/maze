@@ -21,3 +21,18 @@ Generate random, solveable mazes and solve them.
 |   |           |           |   |
 +---+---+---+---+---+---+---+---+
 </pre>
+
+Two maze generation algoritms are used:
+
+ - binary tree produces simple easily solved mazes. https://en.wikipedia.org/wiki/Maze_generation_algorithm#Simple_algorithms
+ - recursive division produces more complex mazes. https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_division_method
+ 
+ The algorithm is selected using a command line option
+```
+maze --h
+Allowed options:
+  --help                produce help message
+  --input arg           input file.
+  --gen arg             Generate new maze. Specify algorithm: none, binary,
+                        recursive
+```
