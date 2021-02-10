@@ -36,3 +36,14 @@ Allowed options:
   --gen arg             Generate new maze. Specify algorithm: none, binary,
                         recursive
 ```
+
+The generated mazes are stored in a text file using "ascii art".  An example is shown at the top of this page.
+
+```
+'+' represents the corner of a cell
+'|' represents a vertical wall between two cells
+'---' represents a horizontal wall between two cells
+'*' represents a cell visited on the solution path
+```
+
+These files are also used to input mazes to be solved.
