@@ -77,9 +77,14 @@ private:
     int myEndRow;                   // then end is always in col myconfig.ncol-1
     std::vector<int> myPath;        // indices of cells on path from start to end
 
+    /** Generate maze using binary tree algorithm
+        https://en.wikipedia.org/wiki/Maze_generation_algorithm#Simple_algorithms
+    */
     void generate_binary_tree();
 
-    /// Start maze generation using recursive division algorithm
+    /** Start maze generation using recursive division algorithm
+        https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_division_method
+    */
     void generate_recursive_init();
 
     /// Recursive division generator

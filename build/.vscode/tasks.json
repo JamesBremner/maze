@@ -1,0 +1,41 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "maze",
+            "options": {
+                "cwd": "${workspaceFolder}/../src"
+            },
+            "command": "mingw32-make.exe",
+            "args": [
+                "-f",
+                "makefile.mk",
+                "maze"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean",
+            "options": {
+                "cwd": "${workspaceFolder}/src"
+            },
+            "command": "mingw32-make.exe",
+            "args": [
+                "-f",
+                "jobs.mk",
+                "clean"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
