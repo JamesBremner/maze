@@ -5,9 +5,12 @@ INCS = -I./ \
 	-I../../raven-set \
 	-I../../windex/include
 
+# folders
 
 SDIR = ../src
 ODIR = ../build/obj
+
+# symbols
 
 OPT = -g
 CCflags = -std=c++17 $(OPT)
@@ -17,18 +20,14 @@ WEXLIBS = -lstdc++fs -lgdiplus -lgdi32 -lcomdlg32
 
 ### OBJECT FILES
 
-OBJ = $(ODIR)/main.o $(ODIR)/cmaze.o
+OBJ = $(ODIR)/main.o $(ODIR)/cMaze.o
 
 ### COMPILE
 
-$(ODIR)/main.o : main.cpp
-	g++ -o  $@ -c main.cpp $(INCS) $(CCflags)
+$(ODIR)/%.o : %.cpp
+	g++ -o  $@ -c $< $(INCS) $(CCflags)
 
-$(ODIR)/cmaze.o : cmaze.cpp
-	g++ -o  $@ -c cmaze.cpp $(INCS) $(CCflags)
-
-
-#### LINKS
+#### LINK
 
 maze : $(OBJ)
 	g++ -o ../bin/maze.exe \
@@ -38,4 +37,4 @@ maze : $(OBJ)
 
 .PHONY: clean
 clean:
-	del /q ..\obj
+	del /q ..\build\obj\*.o

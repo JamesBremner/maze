@@ -25,12 +25,12 @@
         {
             "label": "clean",
             "options": {
-                "cwd": "${workspaceFolder}/src"
+                "cwd": "${workspaceFolder}/../src"
             },
             "command": "mingw32-make.exe",
             "args": [
                 "-f",
-                "jobs.mk",
+                "makefile.mk",
                 "clean"
             ],
             "problemMatcher": [
