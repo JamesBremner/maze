@@ -1,5 +1,7 @@
 # maze
 
+This repository is no longer supported.  Please use the PathFinder maze features described here https://github.com/JamesBremner/PathFinder/wiki/Maze
+
 Generate random, solveable mazes and solve them.
 
 <pre>
